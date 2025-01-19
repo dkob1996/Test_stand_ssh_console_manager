@@ -146,4 +146,21 @@ commands:
 * Для тех у кого Mac
 * Если У вас Win, тогда можно использовать раздел E.
 
-1. ТУТ БУДЕТ ПРО СБОРКУ НА ВИН КОГДА У ТЕБЯ МАК
+1. Устанавливаем VirtualBox на Mac
+- https://www.virtualbox.org/wiki/Downloads
+2. Скачиваем ISO образ Win10
+- https://www.microsoft.com/ru-ru/software-download/windows10ISO
+3. Запускаем виртуальную машину с Win10
+- Будет просить активацию, можно воспользоваться 30-дневным пробным периодом
+4. Открываем наш проект
+5. Устанавливаем python
+6. Устанавливаем pyintaller
+7. Выполняем комманду через терминал
+```python
+pyinstaller --onefile --add-data "commands.yaml;." --add-data "login_data.yaml;." main.py
+```
+8. Берем файл main.exe из папки dist
+9. Его надо архивировать
+10. Отправляем архив человеку с mac
+11. Скачать архив
+12. Распаковать
