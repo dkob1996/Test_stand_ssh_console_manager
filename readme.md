@@ -78,7 +78,14 @@
     port: port
     username: "username"
     password: "password"
+    postfix: "postfix"
 ```
+- hostname: адрес сервера
+- port: номер порта (стандартный = 22)
+- username: имя пользователя
+- password: пароль для входа
+- postfix: то, что выводится в консоль после захода на сервер<br>
+(например: username@<b>postfix</b>:~$)
 
 Например:
 ```yaml
@@ -86,6 +93,7 @@
     port: 22
     username: "test"
     password: "easypass"
+    postfix: "win-test123"
 ```
 
 ## D. Создание файла команд
