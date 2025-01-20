@@ -78,6 +78,8 @@ class CLI:
                     while True:  # Цикл для работы с командами внутри категории
                         self.display_commands(category_input)
                         command_input = input("Введите команду (или 'back' для возврата, 'exit' для выхода): ").strip().lower()
+                        #if command_input == "cat -v":
+                            #self.ssh_client.execute_command(command_input, "test")
 
                         if command_input == "back":  # Вернуться к выбору категории
                             break
