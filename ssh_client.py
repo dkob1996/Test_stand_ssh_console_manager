@@ -48,7 +48,6 @@ class SSHClient:
             tty.setraw(sys.stdin)
             channel.settimeout(0.0)
 
-            esc_buffer = ""
             while True:
                 if channel.recv_ready():
                     output = channel.recv(1024).decode("utf-8", errors="ignore")
@@ -70,18 +69,13 @@ class SSHClient:
 
                 if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
                     input_data = sys.stdin.read(1)
-                    if input_data == "\x1b":  # Начало ESC-последовательности
-                        esc_buffer = input_data
-                        self.logger.debug(f"Начата ESC-последовательность: {repr(esc_buffer)}")
-                    elif esc_buffer:  # Продолжение ESC-последовательности
-                        esc_buffer += input_data
-                        if len(esc_buffer) == 3:  # Завершение ESC-последовательности
-                            self.logger.debug(f"Завершена ESC-последовательность: {repr(esc_buffer)}")
-                            channel.send(esc_buffer)  # Отправляем только завершённую ESC-последовательность
-                            esc_buffer = ""
-                    else:  # Если не ESC-последовательность, отправляем символ
-                        self.logger.debug(f"Считан ввод: {repr(input_data)}")
-                        channel.send(input_data)
+                    
+                    if input_data == "\x1b":  # Если это начало ESC-последовательности
+                        # Считываем оставшиеся символы ESC-последовательности
+                        input_data += sys.stdin.read(2)
+
+                    self.logger.debug(f"Отправлено на сервер: {repr(input_data)}")
+                    channel.send(input_data)
 
             exit_status = channel.recv_exit_status()
             self.logger.info(f"Сессия завершена с кодом: {exit_status}")
