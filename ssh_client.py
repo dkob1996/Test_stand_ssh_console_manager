@@ -36,20 +36,6 @@ class SSHClient:
         if self.client:
             self.client.close()
             self.logger.info("SSH-соединение закрыто.")
-
-    def clean_input(self, input_data):
-        """
-        Функция очищает данные от нежелательных символов "00~" и "01~".
-        """
-        # Проверяем, начинается ли строка с "00~"
-        if input_data.startswith("00~"):
-            input_data = input_data[3:]  # Удаляем первые три символа "00~"
-
-        # Проверяем, заканчивается ли строка на "01~"
-        if input_data.endswith("01~"):
-            input_data = input_data[:-3]  # Удаляем последние три символа "01~"
-
-        return input_data
     
     def write_to_file(self, data):
         """
