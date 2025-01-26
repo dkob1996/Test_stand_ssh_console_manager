@@ -103,7 +103,7 @@ class CLI:
                                 if log_choice == "y":
                                     print("Пример вывода за исключением слова: -vw слово")
                                     print("Пример вывода только со словом: -i слово")
-                                    log_param = input("Введите параметр: ")
+                                    log_param = self.ssh_client.remove_control_sequences(input("Введите параметр: "))
                                     if log_param == "":
                                         command_to_execute = self.commands[category_input][command_input]
                                     else:

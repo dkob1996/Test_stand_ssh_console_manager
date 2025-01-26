@@ -44,7 +44,6 @@ class SSHClient:
         # Это регулярное выражение удаляет escape-символы и управляющие последовательности, такие как ^[[200~ и ^[[201~
         control_sequence_pattern = r'\x1b\[[0-9;]*[A-Za-z]'
         if re.search(control_sequence_pattern, text):
-            print('Лишние символы в команде были удалены')
             return re.sub(control_sequence_pattern, '', text)
         return text
     
