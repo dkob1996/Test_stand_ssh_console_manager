@@ -37,6 +37,35 @@ class SSHClient:
             self.client.close()
             self.logger.info("SSH-соединение закрыто.")
 
+    def clean_input(self, input_data):
+        """
+        Функция очищает данные от нежелательных символов "00~" и "01~".
+        """
+        # Проверяем, начинается ли строка с "00~"
+        if input_data.startswith("00~"):
+            input_data = input_data[3:]  # Удаляем первые три символа "00~"
+
+        # Проверяем, заканчивается ли строка на "01~"
+        if input_data.endswith("01~"):
+            input_data = input_data[:-3]  # Удаляем последние три символа "01~"
+
+        return input_data
+    
+    def write_to_file(self, data):
+        """
+        Записывает данные в указанный файл.
+
+        :param file_path: Путь к файлу, в который будут записаны данные.
+        :param data: Данные, которые нужно записать в файл (строка).
+        """
+        file_path = "logs.txt"
+        try:
+            with open(file_path, 'a', encoding='utf-8') as file:
+                file.write(data + '\n')
+            self.logger.debug(f"Данные успешно записаны в файл: {file_path}")
+        except Exception as e:
+            self.logger.warning(f"Ошибка при записи в файл: {e}")
+
     def execute_command(self, command, prompt):
         '''Открывает интерактивную сессию.'''
         channel = self.client.invoke_shell(term='xterm')
@@ -70,12 +99,17 @@ class SSHClient:
                 if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
                     input_data = sys.stdin.read(1)
                     
-                    if input_data == "\x1b":  # Если это начало ESC-последовательности
-                        # Считываем оставшиеся символы ESC-последовательности
+                    if input_data == "\x1b":
                         input_data += sys.stdin.read(2)
+                        if input_data == '\x1b[2':
+                            input_data += sys.stdin.read(3)
+                            if input_data in ('\x1b[200~', '\x1b[201~'):
+                                pass
+                        elif input_data in ('\x1bOC', '\x1bOB', '\x1bOA', '\x1bOD'):
+                            channel.send(input_data)
 
-                    self.logger.debug(f"Отправлено на сервер: {repr(input_data)}")
-                    channel.send(input_data)
+                    else:
+                        channel.send(input_data)
 
             exit_status = channel.recv_exit_status()
             self.logger.info(f"Сессия завершена с кодом: {exit_status}")
