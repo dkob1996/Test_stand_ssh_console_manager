@@ -4,6 +4,7 @@ import termios
 import tty
 import select
 import logging
+import os
 
 
 class SSHClient:
@@ -52,9 +53,23 @@ class SSHClient:
         except Exception as e:
             self.logger.warning(f"Ошибка при записи в файл: {e}")
 
+    def get_terminal_size(self):
+        """Получает размеры терминала из текущего окна."""
+        try:
+            # Получаем размер терминала с помощью команды stty
+            size = os.popen('stty size', 'r').read().split()
+            height = int(size[0])
+            width = int(size[1])
+            return height, width
+        except Exception as e:
+            self.logger.error(f"Ошибка при получении размера терминала: {e}")
+            return 24, 80  # Возвращаем стандартные размеры, если не удалось получить
+
+
     def execute_command(self, command, prompt):
         '''Открывает интерактивную сессию.'''
-        channel = self.client.invoke_shell(term='xterm')
+        height, width = self.get_terminal_size() # Проблема 1: дает подстроить размер окна только при запуске сессии
+        channel = self.client.invoke_shell(term='xterm', width=width, height=height)
         channel.send(command + "\n")
         self.logger.info(f"Отправлена команда: {command}")
 
