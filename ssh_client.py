@@ -5,6 +5,7 @@ import tty
 import select
 import logging
 import os
+import re
 
 
 class SSHClient:
@@ -37,6 +38,15 @@ class SSHClient:
         if self.client:
             self.client.close()
             self.logger.info("SSH-соединение закрыто.")
+    
+    def remove_control_sequences(self, text):
+        '''Удаляет управляющие последовательности из текста'''
+        # Это регулярное выражение удаляет escape-символы и управляющие последовательности, такие как ^[[200~ и ^[[201~
+        control_sequence_pattern = r'\x1b\[[0-9;]*[A-Za-z]'
+        if re.search(control_sequence_pattern, text):
+            print('Лишние символы в команде были удалены')
+            return re.sub(control_sequence_pattern, '', text)
+        return text
     
     def write_to_file(self, data):
         """

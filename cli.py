@@ -95,7 +95,7 @@ class CLI:
                             prompt = self.get_prompt_from_path(command_to_execute, username, postfix)
 
                             if command_input == "run script":
-                                script_name = input("Введите название скрипта: ")
+                                script_name = self.ssh_client.remove_control_sequences(input("Введите название скрипта: "))
                                 command_to_execute = self.commands[category_input][command_input] + script_name
                             elif command_input in ["tail celery logs", "tail wsgi logs", "full celery logs", "full wsgi logs"]:
                                 print("Выход из интерактивного режима: Ctrl + C")
